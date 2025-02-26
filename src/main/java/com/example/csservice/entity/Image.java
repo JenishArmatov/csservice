@@ -23,6 +23,6 @@ public class Image {
     private String fileType; // Тип файла (например, png, jpg)
 
     @ManyToOne
-    @JoinColumn(name = "external_id")
+    @JoinColumn(name = "product_id")
     private Product product;
 }

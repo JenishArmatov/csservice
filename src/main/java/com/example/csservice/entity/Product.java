@@ -40,8 +40,14 @@ public class Product {
     )
     private Set<Tag> tags = new HashSet<>();
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<Price> prices = new ArrayList<>();
+    // 🔹 Одна актуальная цена
+    @OneToOne
+    @JoinColumn(name = "current_price_id")
+    private Price currentPrice;
+
+    // 🔹 История цен
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Price> priceHistory = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<Image> images = new ArrayList<>();

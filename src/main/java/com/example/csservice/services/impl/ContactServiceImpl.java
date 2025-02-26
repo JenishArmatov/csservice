@@ -6,6 +6,7 @@ import com.example.csservice.entity.Image;
 import com.example.csservice.mappers.ContactMapper;
 import com.example.csservice.repository.ContactRepository;
 import com.example.csservice.services.ContactService;
+import com.example.csservice.services.ImageService;
 import com.example.csservice.utils.FileStorageUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -25,16 +26,13 @@ public class ContactServiceImpl implements ContactService {
     private final ContactMapper contactMapper;
     @Value("${file.upload-dir}")
     private String uploadDir;
+    private final ImageService imageService;
 
 
     @Override
     public ContactDto createContact(ContactDto contactDto, MultipartFile file) {
-        Image image = null;
-        try {
-            image = FileStorageUtil.createImage(file, uploadDir);
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+
+        Image image = imageService.createImage(file);
         if (image != null){
             Contact contact = contactMapper.toEntity(contactDto, image);
             return contactMapper.toDto(contactRepository.save(contact));

@@ -2,8 +2,10 @@ package com.example.csservice.services.impl;
 
 import com.example.csservice.dto.PriceDto;
 import com.example.csservice.entity.Price;
+import com.example.csservice.entity.Product;
 import com.example.csservice.mappers.PriceMapper;
 import com.example.csservice.repository.PriceRepository;
+import com.example.csservice.repository.ProductRepository;
 import com.example.csservice.services.PriceService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +19,13 @@ import java.util.stream.Collectors;
 public class PriceServiceImpl implements PriceService {
     private final PriceRepository priceRepository;
     private final PriceMapper priceMapper;
+    private final ProductRepository productRepository;
 
     @Override
     public PriceDto createPrice(PriceDto priceDto) {
-        Price price = priceMapper.toEntity(priceDto);
+        Product product = productRepository.findById(priceDto.getProductId())
+                .orElseThrow(() -> new EntityNotFoundException("Товар с ID " + priceDto.getProductId() + " не найден"));
+        Price price = priceMapper.toEntity(priceDto, product);
         priceRepository.save(price);
         return priceMapper.toDto(price);
     }

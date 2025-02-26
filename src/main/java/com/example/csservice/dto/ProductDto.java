@@ -2,15 +2,21 @@ package com.example.csservice.dto;
 
 import lombok.*;
 
-@Getter
-@Setter
-@AllArgsConstructor
+import java.util.List;
+import java.util.Set;
+
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class ProductDto {
     private Long id;
     private String name;
-    private String article;
-    private Integer count;
-    private Long manufacturerId;
+    private String article; // Артикул
+    private Integer count; // Количество на складе
+    private Long manufacturerId; // ID производителя
+    private String manufacturerName; // Название производителя
+    private Set<String> tags; // Названия тегов
+    private List<PriceDto> prices; // Список цен
+    private List<ImageDto> images; // Список изображений
 }

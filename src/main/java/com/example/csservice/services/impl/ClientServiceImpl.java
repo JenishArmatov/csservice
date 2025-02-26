@@ -6,6 +6,7 @@ import com.example.csservice.entity.Image;
 import com.example.csservice.mappers.ClientMapper;
 import com.example.csservice.repository.ClientRepository;
 import com.example.csservice.services.ClientService;
+import com.example.csservice.services.ImageService;
 import com.example.csservice.utils.FileStorageUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -23,18 +24,15 @@ import java.util.stream.Collectors;
 public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
+    private final ImageService imageService;
     @Value("${file.upload-dir}")
     private String uploadDir;
 
 
     @Override
     public ClientDto createClient(ClientDto clientDto, MultipartFile file) {
-        Image image = null;
-        try {
-            image = FileStorageUtil.createImage(file, uploadDir);
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+
+        Image image = imageService.createImage(file);
         if (image != null){
             Client client = clientMapper.toEntity(clientDto, image);
             return clientMapper.toDto(clientRepository.save(client));
@@ -78,7 +76,9 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ClientDto getClientByName(String name) {
-        return clientMapper.toDto(clientRepository.findByNameClient(name).orElseThrow());
+    public List<ClientDto> getClientByName(String name) {
+        return clientRepository.findByNameClient(name).stream()
+                .map(clientMapper::toDto)
+                .collect(Collectors.toList());
     }
 }

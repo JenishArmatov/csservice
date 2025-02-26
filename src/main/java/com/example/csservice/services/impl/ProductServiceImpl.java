@@ -1,16 +1,22 @@
 package com.example.csservice.services.impl;
 
+import com.example.csservice.dto.PriceDto;
 import com.example.csservice.dto.ProductDto;
+import com.example.csservice.entity.Image;
+import com.example.csservice.entity.Price;
 import com.example.csservice.entity.Product;
 import com.example.csservice.mappers.ProductMapper;
 import com.example.csservice.repository.ManufacturerRepository;
+import com.example.csservice.repository.PriceRepository;
 import com.example.csservice.repository.ProductRepository;
 import com.example.csservice.repository.TagRepository;
+import com.example.csservice.services.PriceService;
 import com.example.csservice.services.ProductService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,10 +27,11 @@ public class ProductServiceImpl implements ProductService {
     private final ManufacturerRepository manufacturerRepository;
     private final TagRepository tagRepository;
     private final ProductMapper productMapper;
+    private final PriceRepository priceRepository;
 
     @Override
-    public ProductDto createProduct(ProductDto productDto) {
-        Product product = productMapper.toEntity(productDto);
+    public ProductDto createProduct(ProductDto productDto, List<Image> images) {
+        Product product = productMapper.toEntity(productDto, images);
         productRepository.save(product);
         return productMapper.toDto(product);
     }
@@ -61,7 +68,39 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ProductDto updateProductPrice(Long productId, PriceDto newPriceDto) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Товар не найден"));
+
+        // Делаем текущую цену устаревшей
+        if (product.getCurrentPrice() != null) {
+            Price oldPrice = product.getCurrentPrice();
+            oldPrice.setCurrent(false);
+            oldPrice.setValidTo(LocalDateTime.now());
+        }
+
+        // Создаем новую цену
+        Price newPrice = Price.builder()
+                .product(product)
+                .priceType(newPriceDto.getPriceType())
+                .priceValue(newPriceDto.getPriceValue())
+                .isCurrent(true)
+                .validFrom(LocalDateTime.now())
+                .build();
+
+        priceRepository.save(newPrice);
+
+        // Устанавливаем новую цену как актуальную
+        product.setCurrentPrice(newPrice);
+        product.getPriceHistory().add(newPrice);
+        productRepository.save(product);
+
+        return productMapper.toDto(product);
+    }
+
+    @Override
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
     }
+
 }

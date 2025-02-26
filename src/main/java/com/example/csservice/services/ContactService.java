@@ -1,6 +1,7 @@
 package com.example.csservice.services;
 
 import com.example.csservice.dto.ContactDto;
+import com.example.csservice.entity.Image;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

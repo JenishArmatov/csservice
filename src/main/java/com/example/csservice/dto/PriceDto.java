@@ -1,14 +1,28 @@
 package com.example.csservice.dto;
+import com.example.csservice.entity.Product;
+import jakarta.persistence.Column;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.*;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+import java.time.LocalDateTime;
+
+@Data
 @Builder
 public class PriceDto {
+
     private Long id;
-    private Long productId;
-    private String priceType;
-    private Double priceValue;
+
+    private Long productId; // ID Товара
+
+    private String priceType; // Тип цены (например, "Оптовая", "Розничная")
+
+    private Double priceValue; // Значение цены
+
+    private boolean isCurrent; // Флаг: актуальная цена
+
+    private LocalDateTime validFrom; // Дата начала действия цены
+
+    private LocalDateTime validTo; // Дата окончания действия (null, если активна)
+
 }

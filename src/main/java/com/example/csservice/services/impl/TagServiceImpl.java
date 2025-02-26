@@ -5,6 +5,7 @@ import com.example.csservice.entity.Tag;
 import com.example.csservice.mappers.TagMapper;
 import com.example.csservice.repository.TagRepository;
 import com.example.csservice.services.TagService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,23 @@ public class TagServiceImpl implements TagService {
         return tagRepository.findAll().stream()
                 .map(tagMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<TagDto> getTagsByTagName(String tagName) {
+        return tagRepository.findByTagName(tagName).stream()
+                .map(tagMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public TagDto updateTag(Long id, TagDto tagDto) {
+        Tag tag = tagRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Тэг с ID " + id + " не найден"));
+        tag.setTagName(tagDto.getTagName());
+        tag.setProducts(tagDto.getProducts());
+
+        return tagMapper.toDto(tagRepository.save(tagMapper.toEntity(tagDto)));
     }
 
     @Override

@@ -14,11 +14,6 @@ import java.util.List;
 public class ProvisionController {
     private final ProvisionService provisionService;
 
-    @PostMapping
-    public ResponseEntity<ProvisionDto> createProvision(@RequestBody ProvisionDto provisionDto) {
-        return ResponseEntity.ok(provisionService.createProvision(provisionDto));
-    }
-
     @GetMapping
     public ResponseEntity<List<ProvisionDto>> getAllProducts() {
         return ResponseEntity.ok(provisionService.getAllProvisions());
@@ -34,14 +29,4 @@ public class ProvisionController {
         return ResponseEntity.ok(provisionService.getProvisionByName(name));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ProvisionDto> updateProduct(@PathVariable Long id, @RequestBody ProvisionDto provisionDto) {
-        return ResponseEntity.ok(provisionService.updateProvision(id, provisionDto));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        provisionService.deleteProvision(id);
-        return ResponseEntity.noContent().build();
-    }
 }

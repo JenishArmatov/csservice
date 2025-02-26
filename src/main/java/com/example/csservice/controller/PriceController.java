@@ -14,11 +14,6 @@ import java.util.List;
 public class PriceController {
     private final PriceService priceService;
 
-    @PostMapping
-    public ResponseEntity<PriceDto> createPrice(@RequestBody PriceDto priceDto) {
-        return ResponseEntity.ok(priceService.createPrice(priceDto));
-    }
-
     @GetMapping
     public ResponseEntity<List<PriceDto>> getAllPrices() {
         return ResponseEntity.ok(priceService.getAllPrices());
@@ -29,9 +24,4 @@ public class PriceController {
         return ResponseEntity.ok(priceService.getPriceById(id));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePrice(@PathVariable Long id) {
-        priceService.deletePrice(id);
-        return ResponseEntity.noContent().build();
-    }
 }
