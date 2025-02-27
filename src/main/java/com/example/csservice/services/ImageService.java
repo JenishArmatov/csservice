@@ -11,7 +11,7 @@ public interface ImageService {
     Image createImage(MultipartFile file);
     List<ImageDto> getAllImages();
     ImageDto getImageById(Long id);
-    ImageDto updateImage(Long id, ImageDto imageDto);
+    ImageDto updateImage(Long id, MultipartFile file);
     void deleteImage(Long id);
     List<ImageDto> getImageByName(String name);
 }

@@ -3,6 +3,7 @@ package com.example.csservice.services.impl;
 import com.example.csservice.dto.PriceDto;
 import com.example.csservice.dto.ProductDto;
 import com.example.csservice.entity.Image;
+import com.example.csservice.entity.Manufacturer;
 import com.example.csservice.entity.Price;
 import com.example.csservice.entity.Product;
 import com.example.csservice.mappers.ProductMapper;
@@ -31,7 +32,16 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto createProduct(ProductDto productDto, List<Image> images) {
+        Manufacturer manufacturer = manufacturerRepository.findById(productDto.getManufacturerId())
+                .orElseGet(() -> {
+                    Manufacturer newManufacturer = Manufacturer.builder()
+                            .manufactureText(productDto.getManufacturerName())
+                            .build();
+                    return manufacturerRepository.save(newManufacturer);
+                });
+
         Product product = productMapper.toEntity(productDto, images);
+        product.setManufacturer(manufacturer);
         productRepository.save(product);
         return productMapper.toDto(product);
     }

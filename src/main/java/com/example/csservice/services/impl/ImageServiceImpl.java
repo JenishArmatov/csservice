@@ -60,16 +60,18 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public ImageDto updateImage(Long id, ImageDto imageDto) {
-        Image image = imageRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Изображение с ID " + id + " не найден"));
+    public ImageDto updateImage(Long id, MultipartFile file) {
 
-        image.setImagePath(imageDto.getImagePath());
-        image.setId(image.getId());
-        image.setAltText(imageDto.getAltText());
-        image.setFileType(imageDto.getFileType());
+        deleteImage(id);
 
-        return imageMapper.toDto(imageRepository.save(image));
+        try {
+            Image newImage = FileStorageUtil.updateImage(id, file, uploadDir);
+            return imageMapper.toDto(imageRepository.save(newImage));
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     @Override

@@ -59,8 +59,13 @@ public class SecurityConfig {
                     corsConfiguration.setAllowCredentials(true);
                     return corsConfiguration;
                 }))
-                // Настройка доступа к конечным точкам
+                // Настройка доступа к конечным точкам/api/auth
                 .authorizeHttpRequests(request -> request
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
                         .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN") // Доступ для админов
                         .anyRequest().authenticated())
@@ -69,7 +74,6 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -89,4 +93,5 @@ public class SecurityConfig {
             throws Exception {
         return config.getAuthenticationManager();
     }
+
 }
