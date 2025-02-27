@@ -8,5 +8,6 @@ public interface PriceService {
     PriceDto createPrice(PriceDto priceDto);
     List<PriceDto> getAllPrices();
     PriceDto getPriceById(Long id);
+    PriceDto updatePrice(Long id, PriceDto priceDto);
     void deletePrice(Long id);
 }

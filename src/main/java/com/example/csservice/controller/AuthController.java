@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,12 +28,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final AuthenticationServiceImpl authenticationService;
 
-    @Operation(summary = "Регистрация пользователя", description = "Создает нового пользователя и возвращает JWT токен.")
+    @Operation(summary = "Регистрация пользователя", description = "Создает нового пользователя и возвращает JWT токен (доступно только администратору).")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Пользователь успешно зарегистрирован",
                     content = @Content(schema = @Schema(implementation = JwtAuthenticationResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Недостаточно прав"),
             @ApiResponse(responseCode = "400", description = "Ошибка регистрации")
     })
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")  // ✅ Только админ может регистрировать новых пользователей
     @PostMapping("/sign-up")
     public ResponseEntity<JwtAuthenticationResponse> signUp(@RequestBody SignUpRequest request) {
         return ResponseEntity.ok(authenticationService.signUp(request));

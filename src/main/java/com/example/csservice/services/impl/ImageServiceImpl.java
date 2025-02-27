@@ -15,6 +15,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -37,10 +38,8 @@ public class ImageServiceImpl implements ImageService {
             Image image = FileStorageUtil.createImage(file, uploadDir);
             return imageRepository.save(image);
         }catch (IOException e){
-            e.printStackTrace();
+            throw new RuntimeException("Ошибка при создании изображения", e);
         }
-
-        return null;
 
     }
 
@@ -59,25 +58,23 @@ public class ImageServiceImpl implements ImageService {
         return imageMapper.toDto(image);
     }
 
+    @Transactional
     @Override
     public ImageDto updateImage(Long id, MultipartFile file) {
 
-        deleteImage(id);
-
         try {
+            deleteImage(id); // Удаление старого изображения
             Image newImage = FileStorageUtil.updateImage(id, file, uploadDir);
             return imageMapper.toDto(imageRepository.save(newImage));
-        }catch (IOException e){
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException("Ошибка при обновлении изображения", e);
         }
-
-        return null;
     }
 
     @Override
     public void deleteImage(Long id) {
         if (!imageRepository.existsById(id)) {
-            throw new EntityNotFoundException("Изображение с ID " + id + " не найден");
+            throw new EntityNotFoundException("Изображение с ID " + id + " не найдено");
         }
         imageRepository.deleteById(id);
     }

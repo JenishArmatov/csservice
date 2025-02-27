@@ -46,34 +46,10 @@ public class AdminProductController {
         return ResponseEntity.ok(productService.createProduct(productDto, images));
     }
 
-    @Operation(summary = "Получение всех товаров")
-    @GetMapping
-    public ResponseEntity<List<ProductDto>> getAllProducts() {
-        return ResponseEntity.ok(productService.getAllProducts());
-    }
-
-    @Operation(summary = "Получение товара по ID")
-    @GetMapping("/search-id/{id}")
-    public ResponseEntity<ProductDto> getProductById(@PathVariable Long id) {
-        return ResponseEntity.ok(productService.getProductById(id));
-    }
-
-    @Operation(summary = "Поиск товара по имени")
-    @GetMapping("/search-name/{name}")
-    public ResponseEntity<List<ProductDto>> getProductByName(@PathVariable String name) {
-        return ResponseEntity.ok(productService.getProductByName(name));
-    }
-
     @Operation(summary = "Обновление товара")
     @PutMapping("/{id}")
     public ResponseEntity<ProductDto> updateProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
         return ResponseEntity.ok(productService.updateProduct(id, productDto));
-    }
-
-    @Operation(summary = "Обновление цены товара")
-    @PutMapping("/update/price/{id}")
-    public ResponseEntity<ProductDto> updateProductPrice(@PathVariable Long id, @RequestBody PriceDto priceDto) {
-        return ResponseEntity.ok(productService.updateProductPrice(id, priceDto));
     }
 
     @Operation(summary = "Удаление товара")
@@ -89,25 +65,22 @@ public class AdminProductController {
         return ResponseEntity.ok(priceService.createPrice(priceDto));
     }
 
-    @Operation(summary = "Удаление цены")
+    @Operation(summary = "Обновление цены товара")
+    @PutMapping("/update/price/{id}")
+    public ResponseEntity<ProductDto> updateProductPrice(@PathVariable Long id, @RequestBody PriceDto priceDto) {
+        return ResponseEntity.ok(productService.updateProductPrice(id, priceDto));
+    }
+
+    @Operation(summary = "Удаление цены товара")
     @DeleteMapping("/prices/{id}")
     public ResponseEntity<Void> deletePrice(@PathVariable Long id) {
         priceService.deletePrice(id);
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Удаление изображения")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Изображение успешно удалено"),
-            @ApiResponse(responseCode = "404", description = "Изображение не найдено")
-    })
-    @DeleteMapping("/images/{id}")
-    public ResponseEntity<Void> deleteImage(@PathVariable Long id) {
-        imageService.deleteImage(id);
-        return ResponseEntity.noContent().build();
-    }
 
-    @Operation(summary = "Обновление изображения")
+
+    @Operation(summary = "Обновление изображения товара")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Изображение успешно обновлено",
                     content = @Content(schema = @Schema(implementation = ImageDto.class))),
@@ -118,5 +91,16 @@ public class AdminProductController {
             @PathVariable Long id,
             @RequestPart("file") MultipartFile file) {
         return ResponseEntity.ok(imageService.updateImage(id, file));
+    }
+
+    @Operation(summary = "Удаление изображения товара")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Изображение успешно удалено"),
+            @ApiResponse(responseCode = "404", description = "Изображение не найдено")
+    })
+    @DeleteMapping("/images/{id}")
+    public ResponseEntity<Void> deleteImage(@PathVariable Long id) {
+        imageService.deleteImage(id);
+        return ResponseEntity.noContent().build();
     }
 }

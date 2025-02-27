@@ -8,6 +8,7 @@ public interface TagService {
     TagDto createTag(TagDto tagDto);
     List<TagDto> getAllTags();
     List<TagDto> getTagsByTagName(String tagName);
+    TagDto getTagById(long id);
     TagDto updateTag(Long id, TagDto tagDto);
     void deleteTag(Long id);
 }

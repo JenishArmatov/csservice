@@ -40,6 +40,11 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    public TagDto getTagById(long id) {
+        return tagMapper.toDto(tagRepository.findById(id).orElseThrow(EntityNotFoundException::new));
+    }
+
+    @Override
     public TagDto updateTag(Long id, TagDto tagDto) {
         Tag tag = tagRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Тэг с ID " + id + " не найден"));

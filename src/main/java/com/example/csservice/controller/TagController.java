@@ -22,16 +22,7 @@ import java.util.List;
 public class TagController {
     private final TagService tagService;
 
-    @Operation(summary = "Создать тег", description = "Создаёт новый тег")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Тег успешно создан",
-                    content = @Content(schema = @Schema(implementation = TagDto.class))),
-            @ApiResponse(responseCode = "400", description = "Ошибка валидации данных")
-    })
-    @PostMapping
-    public ResponseEntity<TagDto> createTag(@RequestBody TagDto tagDto) {
-        return ResponseEntity.ok(tagService.createTag(tagDto));
-    }
+
 
     @Operation(summary = "Получить все теги", description = "Возвращает список всех тегов")
     @ApiResponses(value = {
@@ -43,5 +34,33 @@ public class TagController {
     public ResponseEntity<List<TagDto>> getAllTags() {
         return ResponseEntity.ok(tagService.getAllTags());
     }
+
+    @Operation(summary = "Получить тег по ID", description = "Возвращает тег по его идентификатору")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Тег найден",
+                    content = @Content(schema = @Schema(implementation = TagDto.class))),
+            @ApiResponse(responseCode = "404", description = "Тег не найден")
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<TagDto> getTagById(@PathVariable Long id) {
+        return ResponseEntity.ok(tagService.getTagById(id));
+    }
+
+
+
+    @Operation(summary = "Поиск тега по имени", description = "Возвращает список тегов, содержащих указанное имя")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Список найденных тегов",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TagDto.class)))),
+            @ApiResponse(responseCode = "404", description = "Теги не найдены")
+    })
+    @GetMapping("/search")
+    public ResponseEntity<List<TagDto>> searchTagsByName(@RequestParam String name) {
+        return ResponseEntity.ok(tagService.getTagsByTagName(name));
+    }
+
+
+
 }
+
 

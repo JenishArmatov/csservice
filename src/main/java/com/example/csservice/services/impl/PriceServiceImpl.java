@@ -11,6 +11,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,6 +43,22 @@ public class PriceServiceImpl implements PriceService {
         Price price = priceRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Цена не найдена"));
         return priceMapper.toDto(price);
+    }
+
+    @Override
+    public PriceDto updatePrice(Long id, PriceDto priceDto) {
+        Product product = productRepository.findById(priceDto.getProductId())
+                .orElseThrow(() -> new EntityNotFoundException("Товар с ID " + priceDto.getProductId() + " не найден"));
+        Price oldPrice = priceRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Цена не найдена"));
+        oldPrice.setProduct(product);
+        oldPrice.setPriceType(priceDto.getPriceType());
+        oldPrice.setPriceValue(priceDto.getPriceValue());
+        oldPrice.setCurrent(priceDto.isCurrent());
+        oldPrice.setValidFrom(priceDto.getValidFrom() != null ? priceDto.getValidFrom() : LocalDateTime.now());
+        oldPrice.setValidTo(priceDto.getValidTo());
+
+        return priceMapper.toDto(priceRepository.save(oldPrice));
     }
 
     @Override
