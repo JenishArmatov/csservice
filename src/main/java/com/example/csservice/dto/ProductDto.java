@@ -17,6 +17,7 @@ public class ProductDto {
     private Long manufacturerId; // ID производителя
     private String manufacturerName; // Название производителя
     private Set<String> tags; // Названия тегов
+    private PriceDto price;
     private List<PriceDto> prices; // Список цен
     private List<ImageDto> images; // Список изображений
 }

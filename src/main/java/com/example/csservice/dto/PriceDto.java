@@ -1,8 +1,4 @@
 package com.example.csservice.dto;
-import com.example.csservice.entity.Product;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.*;
 
 import java.time.LocalDateTime;

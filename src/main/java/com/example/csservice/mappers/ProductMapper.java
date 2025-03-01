@@ -21,19 +21,21 @@ public class ProductMapper {
     private final ManufacturerService manufacturerService;
     private final ManufacturerMapper manufacturerMapper;
     private final TagService tagService;
+    private final TagMapper tagMapper;
+    private final PriceMapper priceMapper;
 
     public ProductDto toDto(Product product) {
-        return ProductDto.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .article(product.getArticle())
-                .count(product.getCount())
-                .manufacturerId(product.getManufacturer().getId())
-                .manufacturerName(product.getManufacturer().getManufactureText())
-                .tags(product.getTags().stream().map(Tag::getTagName).collect(Collectors.toSet()))
-                .prices(product.getPriceHistory().stream().map(this::mapPriceToDto).collect(Collectors.toList()))
-                .images(product.getImages().stream().map(this::mapImageToDto).collect(Collectors.toList()))
-                .build();
+        ProductDto productDto = new ProductDto();
+        productDto.setId(product.getId());
+        productDto.setName(product.getName());
+        productDto.setArticle(product.getArticle());
+        productDto.setCount(product.getCount());
+        productDto.setManufacturerId(product.getManufacturer().getId());
+        productDto.setManufacturerName(product.getManufacturer().getManufactureText());
+        productDto.setTags(product.getTags().stream().map(Tag::getTagName).collect(Collectors.toSet()));
+        productDto.setPrices(product.getPriceHistory().stream().map(this::mapPriceToDto).collect(Collectors.toList()));
+        productDto.setImages(product.getImages().stream().map(this::mapImageToDto).collect(Collectors.toList()));
+        return productDto;
     }
 
     public Product toEntity(ProductDto dto, List<Image> images) {
@@ -46,12 +48,16 @@ public class ProductMapper {
         Manufacturer manufacturer = manufacturerMapper.toEntity(manufacturerService.getManufacturerById(dto.getManufacturerId()));
         product.setManufacturer(manufacturer);
 
+
         // Получаем список тегов через `TagService`
         Set<Tag> tags = dto.getTags().stream()
                 .flatMap(tagName -> tagService.getTagsByTagName(tagName).stream()
-                        .map(this::mapTagDtoToEntity))
+                        .map(tagMapper::toEntity))
                 .collect(Collectors.toSet());
         product.setTags(tags);
+        for (Image image : images) {
+            image.setProduct(product);
+        }
 
         product.setImages(images);
 
@@ -63,18 +69,18 @@ public class ProductMapper {
         product.setArticle(dto.getArticle());
         product.setCount(dto.getCount());
 
-        // Обновление производителя, если он изменился
-        if (!product.getManufacturer().getId().equals(dto.getManufacturerId())) {
-            Manufacturer manufacturer = manufacturerMapper.toEntity(manufacturerService.getManufacturerById(dto.getManufacturerId()));
-            product.setManufacturer(manufacturer);
-        }
-
-        // Обновление тегов
-        Set<Tag> updatedTags = dto.getTags().stream()
-                .flatMap(tagName -> tagService.getTagsByTagName(tagName).stream()
-                        .map(this::mapTagDtoToEntity))
-                .collect(Collectors.toSet());
-        product.setTags(updatedTags);
+//        // Обновление производителя, если он изменился
+//        if (!product.getManufacturer().getId().equals(dto.getManufacturerId())) {
+//            Manufacturer manufacturer = manufacturerMapper.toEntity(manufacturerService.getManufacturerById(dto.getManufacturerId()));
+//            product.setManufacturer(manufacturer);
+//        }
+//
+//        // Обновление тегов
+//        Set<Tag> updatedTags = dto.getTags().stream()
+//                .flatMap(tagName -> tagService.getTagsByTagName(tagName).stream()
+//                        .map(this::mapTagDtoToEntity))
+//                .collect(Collectors.toSet());
+//        product.setTags(updatedTags);
     }
 
     private PriceDto mapPriceToDto(Price price) {
