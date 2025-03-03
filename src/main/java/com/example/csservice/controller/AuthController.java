@@ -2,6 +2,7 @@ package com.example.csservice.controller;
 
 
 import com.example.csservice.dto.JwtAuthenticationResponse;
+import com.example.csservice.dto.RefreshTokenRequest;
 import com.example.csservice.dto.SignInRequest;
 import com.example.csservice.dto.SignUpRequest;
 import com.example.csservice.services.impl.AuthenticationServiceImpl;
@@ -50,5 +51,17 @@ public class AuthController {
     @PostMapping("/sign-in")
     public ResponseEntity<JwtAuthenticationResponse> signIn(@RequestBody SignInRequest request) {
         return ResponseEntity.ok(authenticationService.signIn(request));
+    }
+
+
+    @Operation(summary = "Обновление Access-токена", description = "Позволяет обновить Access-токен с помощью Refresh-токена.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Токен успешно обновлён",
+                    content = @Content(schema = @Schema(implementation = JwtAuthenticationResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Недействительный или просроченный Refresh-токен")
+    })
+    @PostMapping("/refresh-token")
+    public ResponseEntity<JwtAuthenticationResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
+        return ResponseEntity.ok(authenticationService.refreshToken(request));
     }
 }

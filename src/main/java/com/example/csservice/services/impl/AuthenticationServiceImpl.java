@@ -1,6 +1,7 @@
 package com.example.csservice.services.impl;
 
 import com.example.csservice.dto.JwtAuthenticationResponse;
+import com.example.csservice.dto.RefreshTokenRequest;
 import com.example.csservice.dto.SignInRequest;
 import com.example.csservice.dto.SignUpRequest;
 import com.example.csservice.entity.User;
@@ -12,12 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-/**
- * Реализация сервиса аутентификации пользователей.
- *
- * Этот класс отвечает за регистрацию и аутентификацию пользователей с использованием
- * JWT (JSON Web Token).
- */
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl {
@@ -27,43 +23,47 @@ public class AuthenticationServiceImpl {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
-    /**
-     * Регистрация нового пользователя.
-     *
-     * @param request объект запроса для регистрации пользователя, содержащий данные о пользователе и его ролях.
-     * @return объект JwtAuthenticationResponse с JWT токеном и идентификатором пользователя.
-     * @throws RuntimeException если роль не найдена в репозитории ролей.
-     */
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
-        log.info("Sign up request: {}", request);
-
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRoles());
         userService.create(user);
 
-        var jwt = jwtService.generateToken(user);
-        return new JwtAuthenticationResponse(jwt, userService.getByUsername(user.getUsername()).getId());
+        var accessToken = jwtService.generateToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
+
+        return new JwtAuthenticationResponse(accessToken, refreshToken, userService.getByUsername(user.getUsername()).getId());
     }
 
-    /**
-     * Аутентификация пользователя.
-     *
-     * @param request объект запроса для аутентификации пользователя, содержащий имя пользователя и пароль.
-     * @return объект JwtAuthenticationResponse с JWT токеном и идентификатором пользователя.
-     */
     public JwtAuthenticationResponse signIn(SignInRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                request.getUsername(),
-                request.getPassword()
+                request.getUsername(), request.getPassword()
         ));
 
-        var user = userService
-                .userDetailsService()
-                .loadUserByUsername(request.getUsername());
+        var user = userService.userDetailsService().loadUserByUsername(request.getUsername());
 
-        var jwt = jwtService.generateToken(user);
-        return new JwtAuthenticationResponse(jwt, userService.getByUsername(request.getUsername()).getId());
+        var accessToken = jwtService.generateToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
+
+        return new JwtAuthenticationResponse(accessToken, refreshToken, userService.getByUsername(request.getUsername()).getId());
+    }
+
+    public JwtAuthenticationResponse refreshToken(RefreshTokenRequest request) {
+        String username = jwtService.extractUserName(request.refreshToken());
+
+        if (username == null) {
+            throw new RuntimeException("Недействительный рефреш токен ");
+        }
+
+        var user = userService.userDetailsService().loadUserByUsername(username);
+
+        if (!jwtService.isTokenValid(request.refreshToken(), user)) {
+            throw new RuntimeException("Недействительный или просроченный рефреш токен");
+        }
+
+        var newAccessToken = jwtService.generateToken(user);
+
+        return new JwtAuthenticationResponse(newAccessToken, request.refreshToken(), userService.getByUsername(username).getId());
     }
 }

@@ -14,13 +14,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class JwtAuthenticationResponse {
 
+    private String accessToken;
     /**
      * Токен JWT, выданный при успешной аутентификации.
      */
-    private String token;
+    private String refreshToken;
 
     /**
      * Уникальный идентификатор пользователя, которому принадлежит токен.
      */
     private Long userId;
+
 }

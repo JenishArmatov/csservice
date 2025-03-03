@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +28,7 @@ public class PriceServiceImpl implements PriceService {
         Product product = productRepository.findById(priceDto.getProductId())
                 .orElseThrow(() -> new EntityNotFoundException("Товар с ID " + priceDto.getProductId() + " не найден"));
         Price price = priceMapper.toEntity(priceDto, product);
+        creatNewPriceList(price, product);
         priceRepository.save(price);
         return priceMapper.toDto(price);
     }
@@ -51,6 +53,7 @@ public class PriceServiceImpl implements PriceService {
                 .orElseThrow(() -> new EntityNotFoundException("Товар с ID " + priceDto.getProductId() + " не найден"));
         Price oldPrice = priceRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Цена не найдена"));
+        creatNewPriceList(oldPrice, product);
         oldPrice.setProduct(product);
         oldPrice.setPriceType(priceDto.getPriceType());
         oldPrice.setPriceValue(priceDto.getPriceValue());
@@ -59,6 +62,15 @@ public class PriceServiceImpl implements PriceService {
         oldPrice.setValidTo(priceDto.getValidTo());
 
         return priceMapper.toDto(priceRepository.save(oldPrice));
+    }
+    private void creatNewPriceList(Price oldPrice, Product product) {
+        List<Price> newPrice = product.getPriceHistory();
+        if (newPrice.isEmpty()) {
+            newPrice = new ArrayList<>();
+        }
+        newPrice.add(oldPrice);
+        product.setPriceHistory(newPrice);
+        productRepository.save(product);
     }
 
     @Override
