@@ -86,9 +86,12 @@ public class ProductMapper {
     private PriceDto mapPriceToDto(Price price) {
         return PriceDto.builder()
                 .id(price.getId())
-                .productId(price.getId())
+                .productId(price.getProduct().getId())
+                .current(price.isCurrent())
                 .priceType(price.getPriceType())
                 .priceValue(price.getPriceValue())
+                .validFrom(price.getValidFrom())
+                .validTo(price.getValidTo())
                 .build();
     }
 

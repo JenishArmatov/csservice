@@ -57,7 +57,7 @@ public class PriceServiceImpl implements PriceService {
         oldPrice.setProduct(product);
         oldPrice.setPriceType(priceDto.getPriceType());
         oldPrice.setPriceValue(priceDto.getPriceValue());
-        oldPrice.setCurrent(priceDto.isCurrent());
+        oldPrice.setCurrent(priceDto.getCurrent());
         oldPrice.setValidFrom(priceDto.getValidFrom() != null ? priceDto.getValidFrom() : LocalDateTime.now());
         oldPrice.setValidTo(priceDto.getValidTo());
 

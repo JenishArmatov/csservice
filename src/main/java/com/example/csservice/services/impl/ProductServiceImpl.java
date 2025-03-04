@@ -6,6 +6,7 @@ import com.example.csservice.entity.Image;
 import com.example.csservice.entity.Manufacturer;
 import com.example.csservice.entity.Price;
 import com.example.csservice.entity.Product;
+import com.example.csservice.mappers.PriceMapper;
 import com.example.csservice.mappers.ProductMapper;
 import com.example.csservice.repository.ManufacturerRepository;
 import com.example.csservice.repository.PriceRepository;
@@ -29,6 +30,7 @@ public class ProductServiceImpl implements ProductService {
     private final TagRepository tagRepository;
     private final ProductMapper productMapper;
     private final PriceRepository priceRepository;
+    private final PriceMapper priceMapper;
 
     @Override
     public ProductDto createProduct(ProductDto productDto, List<Image> images) {
@@ -83,21 +85,19 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new EntityNotFoundException("Товар не найден"));
 
         // Делаем текущую цену устаревшей
-        if (product.getCurrentPrice() != null) {
-            Price oldPrice = product.getCurrentPrice();
-            oldPrice.setCurrent(false);
-            oldPrice.setValidTo(LocalDateTime.now());
-        }
+//        if (product.getCurrentPrice() != null) {
+//            Price oldPrice = product.getCurrentPrice();
+//            oldPrice.setCurrent(false);
+//            oldPrice.setValidTo(LocalDateTime.now());
+//        }
 
         // Создаем новую цену
-        Price newPrice = Price.builder()
-                .product(product)
-                .priceType(newPriceDto.getPriceType())
-                .priceValue(newPriceDto.getPriceValue())
-                .isCurrent(true)
-                .validFrom(LocalDateTime.now())
-                .build();
-
+        Price newPrice = priceMapper.toEntity(newPriceDto, product);
+        Price oldPrice = product.getCurrentPrice();
+        oldPrice.setCurrent(false);
+        oldPrice.setValidTo(LocalDateTime.now());
+        newPrice.setProduct(product);
+        newPrice.setCurrent(true);
         priceRepository.save(newPrice);
 
         // Устанавливаем новую цену как актуальную

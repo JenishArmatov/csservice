@@ -5,7 +5,6 @@ import com.example.csservice.entity.Price;
 import com.example.csservice.entity.Product;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,7 +22,7 @@ public class PriceMapper {
                 .productId(price.getProduct().getId())
                 .priceType(price.getPriceType())
                 .priceValue(price.getPriceValue())
-                .isCurrent(price.isCurrent()) // Флаг актуальной цены
+                .current(price.isCurrent()) // Флаг актуальной цены
                 .validFrom(price.getValidFrom())
                 .validTo(price.getValidTo())
                 .build();
@@ -33,16 +32,17 @@ public class PriceMapper {
         if (dto == null || product == null) {
             return null;
         }
+        Price price = new Price();
+        //price.setId(dto.getId());
+        price.setProduct(product);
+        price.setPriceType(dto.getPriceType());
+        price.setPriceValue(dto.getPriceValue());
+        price.setCurrent(dto.getCurrent());
+        price.setValidFrom(dto.getValidFrom());
+        price.setValidTo(dto.getValidTo());
+        return price;
 
-        return Price.builder()
-                .id(dto.getId())
-                .product(product)
-                .priceType(dto.getPriceType())
-                .priceValue(dto.getPriceValue())
-                .isCurrent(dto.isCurrent()) // Установка флага актуальности
-                .validFrom(dto.getValidFrom() != null ? dto.getValidFrom() : LocalDateTime.now()) // Если нет даты, ставим текущую
-                .validTo(dto.getValidTo()) // Может быть null
-                .build();
+
     }
 
     public List<PriceDto> toDtoList(List<Price> prices) {

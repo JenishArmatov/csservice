@@ -28,11 +28,12 @@ public class Price {
     private Double priceValue; // Значение цены
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private boolean isCurrent; // Флаг: актуальная цена
+    private boolean current; // Флаг: актуальная цена
 
     @Column(nullable = false)
     private LocalDateTime validFrom; // Дата начала действия цены
 
     @Column
     private LocalDateTime validTo; // Дата окончания действия (null, если активна)
+
 }
