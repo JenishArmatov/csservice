@@ -4,6 +4,7 @@ import com.example.csservice.dto.ImageDto;
 import com.example.csservice.dto.PriceDto;
 import com.example.csservice.dto.ProductDto;
 import com.example.csservice.entity.Image;
+import com.example.csservice.mappers.ImageMapper;
 import com.example.csservice.services.ImageService;
 import com.example.csservice.services.PriceService;
 import com.example.csservice.services.ProductService;
@@ -33,6 +34,7 @@ public class AdminProductController {
     private final ProductService productService;
     private final ImageService imageService;
     private final PriceService priceService;
+    private final ImageMapper imageMapper;
 
     @Operation(summary = "Создание товара с изображениями")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -77,7 +79,20 @@ public class AdminProductController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Добавление изображения товара")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Изображение успешно добавлено",
+                    content = @Content(schema = @Schema(implementation = ImageDto.class))),
+            @ApiResponse(responseCode = "404", description = "Изображение не найдено")
+    })
+    @PutMapping(value = "/images/add/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ImageDto> addImage(
+            @PathVariable Long id,
+            @RequestPart("file") MultipartFile file) {
 
+        productService.addImageProduct(id, file);
+        return ResponseEntity.ok(imageMapper.toDto(imageService.createImage(file)));
+    }
 
     @Operation(summary = "Обновление изображения товара")
     @ApiResponses(value = {

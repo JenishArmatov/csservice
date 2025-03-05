@@ -32,6 +32,7 @@ public class ProductMapper {
         productDto.setCount(product.getCount());
         productDto.setManufacturerId(product.getManufacturer().getId());
         productDto.setManufacturerName(product.getManufacturer().getManufactureText());
+        productDto.setPrice(priceMapper.toDto(product.getCurrentPrice()));
         productDto.setTags(product.getTags().stream().map(Tag::getTagName).collect(Collectors.toSet()));
         productDto.setPrices(product.getPriceHistory().stream().map(this::mapPriceToDto).collect(Collectors.toList()));
         productDto.setImages(product.getImages().stream().map(this::mapImageToDto).collect(Collectors.toList()));

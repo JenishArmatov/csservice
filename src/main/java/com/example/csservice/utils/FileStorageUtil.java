@@ -1,6 +1,7 @@
 package com.example.csservice.utils;
 
 import com.example.csservice.entity.Image;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,8 +11,10 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 public class FileStorageUtil {
+    @Value("${file.upload-dir}")
+    private static String uploadDir;
 
-    public static Image createImage(MultipartFile file, String uploadDir) throws IOException {
+    public static Image createImage(MultipartFile file) throws IOException {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("Файл не должен быть пустым");
         }
@@ -41,8 +44,8 @@ public class FileStorageUtil {
 
         return image;
     }
-    public static Image updateImage(Long imageId, MultipartFile file, String uploadDir) throws IOException {
-        Image image = createImage(file, uploadDir);
+    public static Image updateImage(Long imageId, MultipartFile file) throws IOException {
+        Image image = createImage(file);
         image.setId(imageId);
         return image;
     }

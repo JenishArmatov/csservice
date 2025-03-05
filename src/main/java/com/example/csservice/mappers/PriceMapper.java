@@ -37,7 +37,7 @@ public class PriceMapper {
         price.setProduct(product);
         price.setPriceType(dto.getPriceType());
         price.setPriceValue(dto.getPriceValue());
-        price.setCurrent(dto.getCurrent());
+        price.setCurrent(dto.isCurrent());
         price.setValidFrom(dto.getValidFrom());
         price.setValidTo(dto.getValidTo());
         return price;

@@ -3,6 +3,7 @@ package com.example.csservice.services;
 import com.example.csservice.dto.PriceDto;
 import com.example.csservice.dto.ProductDto;
 import com.example.csservice.entity.Image;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -14,4 +15,6 @@ public interface ProductService {
     ProductDto updateProduct(Long id, ProductDto productDto);
     ProductDto updateProductPrice(Long productId, PriceDto newPriceDto);
     void deleteProduct(Long id);
+
+    ProductDto addImageProduct(Long productId, MultipartFile imageDto);
 }

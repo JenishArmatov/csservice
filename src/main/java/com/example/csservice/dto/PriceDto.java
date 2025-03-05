@@ -17,19 +17,9 @@ public class PriceDto {
 
     private Double priceValue; // Значение цены
 
-    public boolean getCurrent() {
-        return current;
-    }
-
-    public void setCurrent(boolean current) {
-        this.current = current;
-    }
-
     private boolean current; // Флаг: актуальная цена
 
-
     private LocalDateTime validFrom; // Дата начала действия цены
-
 
     private LocalDateTime validTo; // Дата окончания действия (null, если активна)
 
