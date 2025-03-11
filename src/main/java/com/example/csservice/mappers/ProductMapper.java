@@ -91,6 +91,7 @@ public class ProductMapper {
                 .current(price.isCurrent())
                 .priceType(price.getPriceType())
                 .priceValue(price.getPriceValue())
+                .currency(price.getCurrency())
                 .validFrom(price.getValidFrom())
                 .validTo(price.getValidTo())
                 .build();

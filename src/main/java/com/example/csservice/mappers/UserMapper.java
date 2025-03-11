@@ -27,6 +27,8 @@ public class UserMapper {
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());
         userDto.setUsername(user.getUsername());
+        userDto.setEmail(user.getEmail());
+        userDto.setPhone(user.getPhone());
 
         if (user.getUsername() != null) {
             userDto.setUsername(user.getUsername());
@@ -72,6 +74,12 @@ public class UserMapper {
         // Обновляем простые поля
         if (userDto.getUsername() != null) {
             user.setUsername(userDto.getUsername());
+        }
+        if (userDto.getEmail() != null) {
+            user.setEmail(userDto.getEmail());
+        }
+        if (userDto.getPhone() != null) {
+            user.setPhone(userDto.getPhone());
         }
         if (userDto.getId() != null) {
             user.setId(userDto.getId());

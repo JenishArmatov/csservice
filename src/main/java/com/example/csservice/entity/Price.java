@@ -27,6 +27,9 @@ public class Price {
     @Column(nullable = false)
     private Double priceValue; // Значение цены
 
+    @Column(nullable = false)
+    private String currency; // валюта
+
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean current; // Флаг: актуальная цена
 

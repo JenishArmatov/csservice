@@ -25,6 +25,10 @@ public class User implements UserDetails {
     @Column(unique = true, nullable = false)
     private String username;
 
+    private String email;
+
+    private String phone;
+
     @Column(nullable = false)
     private String password;
 

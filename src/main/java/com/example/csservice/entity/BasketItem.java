@@ -15,9 +15,9 @@ public class BasketItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "basket_id", nullable = false)
-    private Basket basket;
+//    @ManyToOne
+//    @JoinColumn(name = "basket_id", nullable = false)
+//    private Basket basket;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)

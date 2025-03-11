@@ -17,6 +17,8 @@ public class PriceDto {
 
     private Double priceValue; // Значение цены
 
+    private String currency; // валюта
+
     private boolean current; // Флаг: актуальная цена
 
     private LocalDateTime validFrom; // Дата начала действия цены

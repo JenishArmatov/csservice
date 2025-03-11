@@ -14,6 +14,8 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class BasketServiceImpl implements BasketService {
@@ -48,12 +50,13 @@ public class BasketServiceImpl implements BasketService {
         BasketItem item = new BasketItem();
         item.setProduct(product);
         item.setQuantity(quantity);
-        item.setBasket(basket);
         basket.getItems().add(item);
 
         basketRepository.save(basket);
         return basketMapper.toDto(basket);
     }
+
+
 
     @Override
     public BasketDto removeItemFromBasket(Long userId, Long productId) {

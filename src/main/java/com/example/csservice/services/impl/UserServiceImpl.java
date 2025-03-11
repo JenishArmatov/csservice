@@ -54,8 +54,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public UserDto getUserResponseById(Long id) {
         User user = getById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
-        UserDto userDto = userMapper.toUserDto(user);
-        return userDto;
+        return userMapper.toUserDto(user);
     }
 
     public User getByUsername(String username) {

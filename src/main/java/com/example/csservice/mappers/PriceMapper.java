@@ -22,6 +22,7 @@ public class PriceMapper {
                 .productId(price.getProduct().getId())
                 .priceType(price.getPriceType())
                 .priceValue(price.getPriceValue())
+                .currency(price.getCurrency())
                 .current(price.isCurrent()) // Флаг актуальной цены
                 .validFrom(price.getValidFrom())
                 .validTo(price.getValidTo())
@@ -37,6 +38,7 @@ public class PriceMapper {
         price.setProduct(product);
         price.setPriceType(dto.getPriceType());
         price.setPriceValue(dto.getPriceValue());
+        price.setCurrency(dto.getCurrency());
         price.setCurrent(dto.isCurrent());
         price.setValidFrom(dto.getValidFrom());
         price.setValidTo(dto.getValidTo());
