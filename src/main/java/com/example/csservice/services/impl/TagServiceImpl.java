@@ -49,7 +49,7 @@ public class TagServiceImpl implements TagService {
         Tag tag = tagRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Тэг с ID " + id + " не найден"));
         tag.setTagName(tagDto.getTagName());
-        tag.setProducts(tagDto.getProducts());
+       // tag.setProducts(tagDto.getProducts());
 
         return tagMapper.toDto(tagRepository.save(tagMapper.toEntity(tagDto)));
     }

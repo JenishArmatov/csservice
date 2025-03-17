@@ -30,11 +30,9 @@ public class PriceMapper {
     }
 
     public Price toEntity(PriceDto dto, Product product) {
-        if (dto == null || product == null) {
-            return null;
-        }
+
         Price price = new Price();
-        //price.setId(dto.getId());
+        price.setId(dto.getId());
         price.setProduct(product);
         price.setPriceType(dto.getPriceType());
         price.setPriceValue(dto.getPriceValue());

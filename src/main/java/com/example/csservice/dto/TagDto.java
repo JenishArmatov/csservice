@@ -14,6 +14,6 @@ import java.util.Set;
 public class TagDto {
     private Long id;
     private String tagName;
-    private Set<Product> products = new HashSet<>();
+   // private Set<Product> products = new HashSet<>();
 }
 

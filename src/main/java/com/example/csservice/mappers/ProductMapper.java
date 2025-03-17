@@ -5,12 +5,16 @@ import com.example.csservice.dto.PriceDto;
 import com.example.csservice.dto.ProductDto;
 import com.example.csservice.dto.TagDto;
 import com.example.csservice.entity.*;
+import com.example.csservice.repository.*;
 import com.example.csservice.services.ManufacturerService;
+import com.example.csservice.services.PriceService;
 import com.example.csservice.services.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,49 +24,83 @@ import java.util.stream.Collectors;
 public class ProductMapper {
     private final ManufacturerService manufacturerService;
     private final ManufacturerMapper manufacturerMapper;
+    private final ManufacturerRepository manufacturerRepository;
     private final TagService tagService;
     private final TagMapper tagMapper;
     private final PriceMapper priceMapper;
+    private final PriceRepository priceRepository;
+    private final PriceService priceService;
+    private final ProductRepository productRepository;
+    private final TagRepository tagRepository;
+    private final ImageRepository imageRepository;
+
 
     public ProductDto toDto(Product product) {
         ProductDto productDto = new ProductDto();
         productDto.setId(product.getId());
         productDto.setName(product.getName());
+        productDto.setDescription(product.getDescription());
         productDto.setArticle(product.getArticle());
         productDto.setCount(product.getCount());
         productDto.setManufacturerId(product.getManufacturer().getId());
         productDto.setManufacturerName(product.getManufacturer().getManufactureText());
         productDto.setPrice(priceMapper.toDto(product.getCurrentPrice()));
-        productDto.setTags(product.getTags().stream().map(Tag::getTagName).collect(Collectors.toSet()));
+        productDto.setTags(product.getTags().stream().map(tagMapper::toDto).collect(Collectors.toSet()));
         productDto.setPrices(product.getPriceHistory().stream().map(this::mapPriceToDto).collect(Collectors.toList()));
         productDto.setImages(product.getImages().stream().map(this::mapImageToDto).collect(Collectors.toList()));
         return productDto;
     }
 
-    public Product toEntity(ProductDto dto, List<Image> images) {
+    @Transactional
+    public Product toEntity(ProductDto productDto, List<Image> images) {
         Product product = new Product();
-        product.setId(dto.getId());
-        product.setName(dto.getName());
-        product.setArticle(dto.getArticle());
-        product.setCount(dto.getCount());
-
-        Manufacturer manufacturer = manufacturerMapper.toEntity(manufacturerService.getManufacturerById(dto.getManufacturerId()));
-        product.setManufacturer(manufacturer);
-
-
-        // Получаем список тегов через `TagService`
-        Set<Tag> tags = dto.getTags().stream()
-                .flatMap(tagName -> tagService.getTagsByTagName(tagName).stream()
-                        .map(tagMapper::toEntity))
-                .collect(Collectors.toSet());
-        product.setTags(tags);
+        product.setName(productDto.getName());
+        product.setDescription(productDto.getDescription());
+        product.setArticle(productDto.getArticle());
+        product.setCount(productDto.getCount());
         for (Image image : images) {
             image.setProduct(product);
+            imageRepository.save(image);
+        }
+        product.setImages(images);
+        Manufacturer manufacturer = Manufacturer.builder()
+                .manufactureText(productDto.getManufacturerName())
+                .build();
+
+        manufacturerRepository.save(manufacturer);
+
+        product.setManufacturer(manufacturer);
+
+        Product newProduct = productRepository.save(product);
+
+        PriceDto priceDto = productDto.getPrice();
+        priceDto.setProductId(newProduct.getId());
+
+        PriceDto newPriceDto = priceService.createPrice(priceDto);
+
+        newProduct.setCurrentPrice(priceMapper.toEntity(newPriceDto, newProduct));
+
+
+
+        List<Price> prices = new ArrayList<>();
+        for (PriceDto dto : productDto.getPrices()){
+            Price price = priceMapper.toEntity(dto, newProduct);
+            prices.add(price);
         }
 
-        product.setImages(images);
 
-        return product;
+        newProduct.getPriceHistory().clear(); // Очистить старые цены
+        newProduct.getPriceHistory().addAll(prices); // Добавить новые
+
+
+        Set<Tag> tags = productDto.getTags().stream()
+                .map(tagDto -> tagRepository.findByTagName(tagDto.getTagName())
+                        .orElseGet(() -> tagRepository.save(tagMapper.toEntity(tagDto))))
+                .collect(Collectors.toSet());
+        newProduct.setTags(tags);
+
+
+        return newProduct;
     }
 
     public void updateEntity(ProductDto dto, Product product) {

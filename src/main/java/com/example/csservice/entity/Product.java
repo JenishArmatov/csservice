@@ -23,6 +23,9 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private String description;
+
     @Column(unique = true, nullable = false)
     private String article; // Артикул
 

@@ -2,20 +2,21 @@ package com.example.csservice.services.impl;
 
 import com.example.csservice.dto.PriceDto;
 import com.example.csservice.dto.ProductDto;
-import com.example.csservice.entity.Image;
-import com.example.csservice.entity.Manufacturer;
-import com.example.csservice.entity.Price;
-import com.example.csservice.entity.Product;
+import com.example.csservice.dto.TagDto;
+import com.example.csservice.entity.*;
 import com.example.csservice.mappers.PriceMapper;
 import com.example.csservice.mappers.ProductMapper;
+import com.example.csservice.mappers.TagMapper;
 import com.example.csservice.repository.ManufacturerRepository;
 import com.example.csservice.repository.PriceRepository;
 import com.example.csservice.repository.ProductRepository;
 import com.example.csservice.repository.TagRepository;
+import com.example.csservice.services.PriceService;
 import com.example.csservice.services.ProductService;
 import com.example.csservice.utils.FileStorageUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,20 +34,17 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     private final PriceRepository priceRepository;
     private final PriceMapper priceMapper;
+    private final PriceService priceService;
+    private final TagMapper tagMapper;
+
+    @Value("${file.upload-dir}")
+    private  String uploadDir;
 
     @Override
     public ProductDto createProduct(ProductDto productDto, List<Image> images) {
-        Manufacturer manufacturer = manufacturerRepository.findById(productDto.getManufacturerId())
-                .orElseGet(() -> {
-                    Manufacturer newManufacturer = Manufacturer.builder()
-                            .manufactureText(productDto.getManufacturerName())
-                            .build();
-                    return manufacturerRepository.save(newManufacturer);
-                });
 
         Product product = productMapper.toEntity(productDto, images);
-        product.setManufacturer(manufacturer);
-        productRepository.save(product);
+       // Product newProduct = productRepository.save(product); // Получаем айди
         return productMapper.toDto(product);
     }
 
@@ -114,7 +112,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Товар не найден"));
         try {
-            Image productImage = FileStorageUtil.createImage(file);
+            Image productImage = FileStorageUtil.createImage(file, uploadDir);
             List<Image> images = product.getImages();
             images.add(productImage);
             product.setImages(images);

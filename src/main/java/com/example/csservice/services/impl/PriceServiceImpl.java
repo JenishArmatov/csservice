@@ -25,6 +25,7 @@ public class PriceServiceImpl implements PriceService {
 
     @Override
     public PriceDto createPrice(PriceDto priceDto) {
+
         Product product = productRepository.findById(priceDto.getProductId())
                 .orElseThrow(() -> new EntityNotFoundException("Товар с ID " + priceDto.getProductId() + " не найден"));
         Price price = priceMapper.toEntity(priceDto, product);
@@ -69,6 +70,7 @@ public class PriceServiceImpl implements PriceService {
             newPrice = new ArrayList<>();
         }
         newPrice.add(oldPrice);
+        product.getPriceHistory().clear();
         product.setPriceHistory(newPrice);
         productRepository.save(product);
     }

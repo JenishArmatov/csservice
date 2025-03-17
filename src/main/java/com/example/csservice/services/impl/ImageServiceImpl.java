@@ -27,13 +27,14 @@ import java.util.stream.Collectors;
 public class ImageServiceImpl implements ImageService {
     private final ImageRepository imageRepository;
     private final ImageMapper imageMapper;
-
+    @Value("${file.upload-dir}")
+    private  String uploadDir;
 
     @Override
     public Image createImage(MultipartFile file) {
 
         try {
-            Image image = FileStorageUtil.createImage(file);
+            Image image = FileStorageUtil.createImage(file, uploadDir);
             return imageRepository.save(image);
         }catch (IOException e){
             throw new RuntimeException("Ошибка при создании изображения", e);
@@ -62,7 +63,7 @@ public class ImageServiceImpl implements ImageService {
 
         try {
             deleteImage(id); // Удаление старого изображения
-            Image newImage = FileStorageUtil.updateImage(id, file);
+            Image newImage = FileStorageUtil.updateImage(id, file, uploadDir);
             return imageMapper.toDto(imageRepository.save(newImage));
         } catch (IOException e) {
             throw new RuntimeException("Ошибка при обновлении изображения", e);

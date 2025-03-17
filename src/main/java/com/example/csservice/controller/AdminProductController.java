@@ -41,6 +41,9 @@ public class AdminProductController {
     public ResponseEntity<ProductDto> createProduct(
             @RequestPart("productDto") @Valid ProductDto productDto,
             @RequestPart("files") List<MultipartFile> files) {
+        if (productDto == null) {
+            throw new IllegalArgumentException("productDto не может быть null");
+        }
         List<Image> images = files.stream()
                 .map(imageService::createImage)
                 .collect(Collectors.toList());

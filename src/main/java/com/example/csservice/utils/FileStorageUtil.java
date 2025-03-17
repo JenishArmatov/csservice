@@ -11,10 +11,9 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 public class FileStorageUtil {
-    @Value("${file.upload-dir}")
-    private static String uploadDir;
 
-    public static Image createImage(MultipartFile file) throws IOException {
+
+    public static Image createImage(MultipartFile file, String uploadDir) throws IOException {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("Файл не должен быть пустым");
         }
@@ -44,8 +43,8 @@ public class FileStorageUtil {
 
         return image;
     }
-    public static Image updateImage(Long imageId, MultipartFile file) throws IOException {
-        Image image = createImage(file);
+    public static Image updateImage(Long imageId, MultipartFile file, String  uploadDir) throws IOException {
+        Image image = createImage(file, uploadDir);
         image.setId(imageId);
         return image;
     }
