@@ -29,7 +29,7 @@ public class PriceServiceImpl implements PriceService {
         Product product = productRepository.findById(priceDto.getProductId())
                 .orElseThrow(() -> new EntityNotFoundException("Товар с ID " + priceDto.getProductId() + " не найден"));
         Price price = priceMapper.toEntity(priceDto, product);
-        creatNewPriceList(price, product);
+    //    creatNewPriceList(price, product);
         priceRepository.save(price);
         return priceMapper.toDto(price);
     }
@@ -70,7 +70,6 @@ public class PriceServiceImpl implements PriceService {
             newPrice = new ArrayList<>();
         }
         newPrice.add(oldPrice);
-        product.getPriceHistory().clear();
         product.setPriceHistory(newPrice);
         productRepository.save(product);
     }

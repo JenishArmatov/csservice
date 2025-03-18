@@ -42,7 +42,6 @@ public class PriceMapper {
         price.setValidTo(dto.getValidTo());
         return price;
 
-
     }
 
     public List<PriceDto> toDtoList(List<Price> prices) {

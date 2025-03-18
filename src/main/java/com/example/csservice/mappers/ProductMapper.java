@@ -78,9 +78,9 @@ public class ProductMapper {
 
         PriceDto newPriceDto = priceService.createPrice(priceDto);
 
-        newProduct.setCurrentPrice(priceMapper.toEntity(newPriceDto, newProduct));
-
-
+        Price currentPrice = priceMapper.toEntity(newPriceDto, newProduct);
+        currentPrice = priceRepository.save(currentPrice); // Сохраняем в БД
+        newProduct.setCurrentPrice(currentPrice);
 
         List<Price> prices = new ArrayList<>();
         for (PriceDto dto : productDto.getPrices()){
@@ -92,7 +92,6 @@ public class ProductMapper {
         newProduct.getPriceHistory().clear(); // Очистить старые цены
         newProduct.getPriceHistory().addAll(prices); // Добавить новые
 
-
         Set<Tag> tags = productDto.getTags().stream()
                 .map(tagDto -> tagRepository.findByTagName(tagDto.getTagName())
                         .orElseGet(() -> tagRepository.save(tagMapper.toEntity(tagDto))))
@@ -100,8 +99,10 @@ public class ProductMapper {
         newProduct.setTags(tags);
 
 
+
         return newProduct;
     }
+
 
     public void updateEntity(ProductDto dto, Product product) {
         product.setName(dto.getName());

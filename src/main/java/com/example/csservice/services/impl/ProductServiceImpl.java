@@ -44,7 +44,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductDto createProduct(ProductDto productDto, List<Image> images) {
 
         Product product = productMapper.toEntity(productDto, images);
-       // Product newProduct = productRepository.save(product); // Получаем айди
+
         return productMapper.toDto(product);
     }
 
