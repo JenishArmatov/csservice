@@ -19,4 +19,7 @@ public class Category {
 
     @Column(name = "category_name", nullable = false)
     private String categoryName;
+
+    @Column(name = "is_main", nullable = false)
+    private boolean isMain;
 }

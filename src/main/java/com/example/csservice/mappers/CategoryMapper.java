@@ -11,6 +11,7 @@ public class CategoryMapper {
         category.setId(categoryDto.getId());
         category.setUrl(categoryDto.getUrl());
         category.setCategoryName(categoryDto.getContentType());
+        category.setMain(categoryDto.isMain());
         return category;
     }
 
@@ -19,6 +20,7 @@ public class CategoryMapper {
         categoryDto.setId(category.getId());
         categoryDto.setUrl(category.getUrl());
         categoryDto.setContentType(category.getCategoryName());
+        categoryDto.setMain(category.isMain());
         return categoryDto;
     }
 }

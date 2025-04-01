@@ -11,4 +11,6 @@ public class CategoryDto {
     private String url;
 
     private String contentType;
+
+    private boolean isMain;
 }
