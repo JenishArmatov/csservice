@@ -37,7 +37,7 @@ public class FileStorageUtil {
 
         // Создаем сущность Image
         Image image = new Image();
-        image.setImagePath(filePath.toString()); // Путь к файлу
+        image.setImagePath("/uploads/" + uniqueFilename);
         image.setAltText(file.getName());
         image.setFileType(file.getContentType());
 
